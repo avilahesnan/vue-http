@@ -5,17 +5,20 @@
         <button
             class="btn btn-sm me-4"
             :class="classeCSS"
-            :title="tituloBotaoConcluido">
+            :title="tituloBotaoConcluido"
+            @click="concluirTarefa">
                 <i class="fa-solid fa-check"></i>
         </button>
         <button
             class="btn btn-primary btn-sm me-1"
-            title="Editar">
+            title="Editar"
+            @click="$emit('editar', tarefa)">
                 <i class="fa-solid fa-pencil"></i>
         </button>
         <button
             class="btn btn-danger btn-sm"
-            title="Deletar">
+            title="Deletar"
+            @click="$emit('deletar', tarefa)">
                 <i class="fa-solid fa-trash"></i>
         </button>
     </li>
@@ -40,6 +43,11 @@ export default {
             return this.tarefa.concluido
                 ? 'Refazer Tarefa'
                 : 'Concluir Tarefa'
+        }
+    },
+    methods: {
+        concluirTarefa () {
+            this.$emit('concluir', Object.assign({}, this.tarefa, { concluido: !this.tarefa.concluido}))
         }
     }
 }
