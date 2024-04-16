@@ -25,7 +25,9 @@
                 @concluir="editarTarefa" />
         </ul>
 
-        <p v-else>Nenhuma tarefa criada.</p>
+        <p v-else-if="!mensagemErro">Nenhuma tarefa criada.</p>
+
+        <div class="alert alert-danger" v-else>{{ mensagemErro }}</div>
 
         <TarefaSalvar
             v-if="exibirFormulario"
@@ -37,11 +39,10 @@
 
 <script>
 
-import axios from 'axios'
+import axios from './../axios'
 
-import config from './../config/config.js'
-import TarefaSalvar from './TarefaSalvar.vue'
-import TarefasListaItem from './TarefasListaItem.vue'
+import TarefaSalvar from './TarefaSalvar'
+import TarefasListaItem from './TarefasListaItem'
 
 export default {
     components: {
@@ -52,7 +53,8 @@ export default {
         return {
             tarefas: [],
             exibirFormulario: false,
-            tarefaSelecionada: undefined
+            tarefaSelecionada: undefined,
+            mensagemErro: undefined
         }
     },
     computed: {
@@ -70,21 +72,47 @@ export default {
         }
     },
     created () {
-        axios.get(`${config.apiURL}/tarefas`)
+        axios.get('/tarefas')
             .then((response) => {
                 this.tarefas = response.data
+                return 'Olá VueJS!'
+            }, error => {
+                console.log('Erro capturado no then', error)
+                return Promise.reject(error)
+            }).catch(error => {
+                console.log('Erro capturado no catch', error)
+                if (error.response) {
+                    this.mensagemErro = `Servidor retornou um erro: ${error.message} ${error.response.statusText}`
+                    console.log('Erro [resposta]: ', error.response)
+                } else if (error.request) {
+                    this.mensagemErro = `Erro ao tentar se comunicar com o servidor: ${error.message}`
+                    console.log('Erro [requisição]: ', error.request)
+                } else {
+                    this.mensagemErro = `Erro ao fazer requisição ao servidor: ${error.message}`
+                }
+                return 'Olá Axios!'
+            }).then(params => {
+                console.log('Sempre executado', params)
             })
     },
     methods: {
         criarTarefa (tarefa) {
-            axios.post(`${config.apiURL}/tarefas`, tarefa)
-                .then((response) => {
+            // axios.post('/tarefas', tarefa)
+            //     .then((response) => {
+            //         this.tarefas.push(response.data)
+            //         this.resetar()
+            //     })
+            axios.request({
+                method: 'post',
+                url: '/tarefas',
+                data: tarefa
+            }).then((response) => {
                     this.tarefas.push(response.data)
                     this.resetar()
                 })
         },
         editarTarefa (tarefa) {
-            axios.put(`${config.apiURL}/tarefas/${tarefa.id}`, tarefa)
+            axios.put(`/tarefas/${tarefa.id}`, tarefa)
                 .then(() => {
                     const index = this.tarefas.findIndex(t => t.id === tarefa.id)
                     this.tarefas.splice(index, 1, tarefa)
@@ -94,7 +122,7 @@ export default {
         deletarTarefa (tarefa) {
             const confirmar = window.confirm(`Deseja deletar a tarefa ${tarefa.titulo}?`)
             if (confirmar) {
-                axios.delete(`${config.apiURL}/tarefas/${tarefa.id}`)
+                axios.delete(`/tarefas/${tarefa.id}`)
                     .then(() => {
                         const index = this.tarefas.findIndex(t => t.id === tarefa.id)
                         this.tarefas.splice(index, 1)

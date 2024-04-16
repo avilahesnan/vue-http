@@ -2,7 +2,7 @@
   "tarefas": [
     {
       "titulo": "Aprender JavaScript",
-      "concluido": true,
+      "concluido": false,
       "id": "1"
     },
     {
@@ -13,22 +13,14 @@
     {
       "id": "3",
       "titulo": "Aprender Axios",
-      "concluido": true
+      "concluido": false,
+      "curso": "Vue JS"
     },
     {
-      "id": "dbaa",
-      "titulo": "Aprender Python",
-      "concluido": true
-    },
-    {
-      "id": "1ced",
-      "titulo": "Python",
-      "concluido": false
-    },
-    {
-      "id": "9d87",
-      "titulo": "C#",
-      "concluido": false
+      "id": "4d7a",
+      "titulo": "Aprender Vuex",
+      "concluido": true,
+      "curso": "Vue JS"
     }
   ]
 }
