@@ -119,14 +119,24 @@ export default {
                     this.resetar()
                 })
         },
-        deletarTarefa (tarefa) {
+        async deletarTarefa (tarefa) {
             const confirmar = window.confirm(`Deseja deletar a tarefa ${tarefa.titulo}?`)
             if (confirmar) {
-                axios.delete(`/tarefas/${tarefa.id}`)
-                    .then(() => {
-                        const index = this.tarefas.findIndex(t => t.id === tarefa.id)
-                        this.tarefas.splice(index, 1)
-                    })
+                // axios.delete(`/tarefas/${tarefa.id}`)
+                //     .then(() => {
+                //         const index = this.tarefas.findIndex(t => t.id === tarefa.id)
+                //         this.tarefas.splice(index, 1)
+                //     })
+                try {
+                    await axios.delete(`/tarefas/${tarefa.id}`)
+                    const index = this.tarefas.findIndex(t => t.id === tarefa.id)
+                    this.tarefas.splice(index, 1)
+                } catch (error) {
+                    console.log('Erro ao deletar tarefa: ', error)
+                } finally {
+                    console.log('Sempre executado!')
+                }
+                
             }
         },
         exibirFormularioCriar () {
